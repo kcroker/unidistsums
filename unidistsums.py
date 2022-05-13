@@ -125,9 +125,6 @@ class parsibrosh_unweighted(st.rv_continuous):
         # Compute all possible permutations in sign
         self.sign_sets = np.asarray(list(itertools.product((-1,1), repeat=self.N)))
         
-        self.S = lambda signs : 0.5*np.sum(signs*self.beta_minus_alpha)
-        self.tilde_s = lambda signs : np.prod(signs)
-
         # Compute the f(y) prefactor once
         self.prefactor = (-1)**self.N/( factorial(self.N - 1) * self.tilde_a)
 
@@ -140,6 +137,13 @@ class parsibrosh_unweighted(st.rv_continuous):
         # Use interpolation to create the point percent function for rapid variates
         self.internal_cdf = interp1d(dom, cumt, bounds_error=False, fill_value=(0.0,1.0))
         self.internal_ppf = interp1d(cumt, dom)
+
+    # Define utility functions because lambdas don't pickle
+    def S(self, signs):
+        return 0.5*np.sum(signs*self.beta_minus_alpha)
+
+    def tilde_s(self, signs):
+        return np.prod(signs)
         
     # Define the Heaviside
     def theta(self, w):
